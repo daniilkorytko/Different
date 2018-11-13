@@ -1,7 +1,7 @@
 {
     "servers":[
         {
-            "Name": "Localhost"
+            "Name": "localhost"
         }
     ]
 }
