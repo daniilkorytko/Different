@@ -1,0 +1,90 @@
+// ConsoleApplication1.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
+
+#include "pch.h"
+#include <iostream>
+
+//#include <msclr/marshal.h>
+#include <windows.h>
+#include <process.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <winmeta.h>
+#include <mmsystem.h>
+#include <winsock.h>
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "wsock32.lib")
+
+
+#define DEFAULT_KOL_BAYT 1000
+#define	DEFAULT_ECHO_PORT	8080
+#define	DEFAULT_SEND_PORT	58080
+struct sockaddr_in SockAddrLocal, SockAddrReceive, SockAddrSend, SockAddrReceive1;
+SOCKET SockLocal = INVALID_SOCKET;
+SOCKET SockLocalPr = INVALID_SOCKET;
+int nAddrSize, nCnt;
+
+
+char SendBuf[1000];
+
+int main()
+{
+
+	WSADATA WSAData;
+	WORD wWSAVer;
+
+	nAddrSize = sizeof(SockAddrReceive);
+
+	wWSAVer = MAKEWORD(1, 1);
+	if (WSAStartup(wWSAVer, &WSAData) != 0) {
+		//	puts("Ошибка инициализации  WinSocket");
+		return -1;
+	}
+
+	SockLocal = socket(PF_INET, SOCK_DGRAM, 0);
+	if (SockLocal == INVALID_SOCKET) {
+		//	fputs("Îøèáêà ñîçäàíèÿ ñîêåòà\n", stderr);
+		return -1;
+	}
+
+	memset(&SockAddrLocal, 0, sizeof(SockAddrLocal));
+
+
+	SockAddrLocal.sin_family = AF_INET;
+	SockAddrLocal.sin_addr.S_un.S_addr = inet_addr("10.6.99.22");
+	SockAddrLocal.sin_port = htons(DEFAULT_ECHO_PORT);
+
+	bind(SockLocal, (struct sockaddr*) &SockAddrLocal, sizeof(SockAddrLocal));
+
+	SockAddrSend.sin_family = AF_INET;
+	SockAddrSend.sin_addr.S_un.S_addr = inet_addr("40.68.129.102");
+	SockAddrSend.sin_port = htons(DEFAULT_SEND_PORT);
+
+	
+	wWSAVer = MAKEWORD(1, 1);
+	if (WSAStartup(wWSAVer, &WSAData) != 0) {
+		//	puts("Ошибка инициализации  WinSocket");
+		return -1;
+	}
+
+	SockLocalPr = socket(PF_INET, SOCK_DGRAM, 0);
+	if (SockLocalPr == INVALID_SOCKET) {
+		//	fputs("Îøèáêà ñîçäàíèÿ ñîêåòà\n", stderr);
+		return -1;
+	}
+
+
+	while (1) {
+
+		sendto(SockLocal,
+			SendBuf, DEFAULT_KOL_BAYT, 0,
+			(struct sockaddr*) &SockAddrSend, sizeof(SockAddrSend)
+				);
+		Sleep(1000);
+		std::cout << "Package was transmite!\n";
+	}
+
+    std::cout << "Hello World!\n"; 
+}
+
